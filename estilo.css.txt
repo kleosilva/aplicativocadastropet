@@ -1,0 +1,11 @@
+a{
+	width: 100%!important;
+	text-decoration: none;
+}
+
+body{
+    background-image: url("../img/fundopagina.jpg");
+    background-size: 100%;
+}
+
+

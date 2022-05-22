@@ -1,0 +1,79 @@
+package com.qi.appcadastro.controller;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.Model;
+
+import com.qi.appcadastro.model.Pet;
+import com.qi.appcadastro.repository.PetRepository;
+
+@Service
+@Transactional
+@Controller
+public class PetController {
+	
+	@Autowired
+	private PetRepository rep;
+	
+	public List<Pet> listarTodos(){
+		return rep.findAll();
+	}
+	
+	public Pet getPet(long id) {
+		return rep.findById(id).get();
+	}
+	
+	public void salvar(Pet pet) {
+		rep.save(pet);
+	}
+	
+	public void excluir(long id) {
+		rep.deleteById(id);
+	}
+	
+	
+	@RequestMapping("/")
+	public String chamarLista(Model modelo) {
+		List<Pet> listaPet = listarTodos();
+		modelo.addAttribute("listaPet", listaPet);
+		return "index";
+	}
+	
+	@RequestMapping("/novo")
+	public ModelAndView chamarNovo() {
+		ModelAndView modelo = new ModelAndView("novo");
+		Pet pet = new Pet();
+		modelo.addObject("pet", pet);
+		return modelo;
+	}
+	
+	@RequestMapping("/editar/{id}")
+	public ModelAndView chamarEditar(@PathVariable(name = "id") long id) {
+		ModelAndView modelo = new ModelAndView("editar");
+		Pet pet = getPet(id);
+		modelo.addObject(pet);
+		return modelo;
+	}
+	
+	@RequestMapping(value = "/salvar", method = RequestMethod.POST)
+	public String chamarSalvar(@ModelAttribute("pet") Pet pet) {
+		salvar(pet);
+		return "redirect:/";
+	}
+	
+	@RequestMapping("/excluir/{id}")
+	public String chamarExcluir(@PathVariable(name = "id") long id) {
+		excluir(id);
+		return "redirect:/";
+	}
+	
+}
+
